@@ -30,17 +30,17 @@ class aEntityAdminGeneratorConfiguration extends BaseaEntityAdminGeneratorConfig
 	public function getListTitle()
 	{
 		$this->init();
-	    return "Manage " . $this->plural;
+	  return "Manage " . $this->plural;
 	}
 	public function getEditTitle()
 	{
 		$this->init();
-	    return "Edit " . $this->singular;
+	  return "Edit " . $this->singular;
 	}
 	public function getNewTitle()
 	{
 		$this->init();
-	    return "New " . $this->singular;
+	  return "New " . $this->singular;
 	}
 	public function getListDisplay()
   {

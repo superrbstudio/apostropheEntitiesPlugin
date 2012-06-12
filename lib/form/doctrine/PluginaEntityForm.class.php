@@ -10,9 +10,15 @@
  */
 abstract class PluginaEntityForm extends BaseaEntityForm
 {
+  public function getUseFields()
+  {
+    return array('name', 'slug');
+  }
+  
   public function setup()
   {
   	parent::setup();
+    $this->useFields($this->getUseFields());
   	unset($this['type']);
   	unset($this['created_at']);
   	unset($this['updated_at']);
