@@ -19,7 +19,7 @@ class aEntityTools
     {
       $infos[$class] = array(
         'singular' => isset($labels[$class]['singular']) ? $labels[$class]['singular'] : $class, 
-        'plural' => isset($labels[$class]['plural']) ? $labels[$class]['plural'] : $class, 
+        'plural' => isset($labels[$class]['plural']) ? $labels[$class]['plural'] : ($class . 's'), 
         'css' => strtolower($class), 
         'cssPlural' => strtolower($class) . 's',
         'list' => strtolower($class) . '_list',
@@ -48,8 +48,10 @@ class aEntityTools
       {
         $tableMethod->andWhere('id <> ?', $form->getObject()->getId());
       }
-      $form->setWidget(aEntityTools::listForClass($class), new sfWidgetFormDoctrineChoice(array('multiple' => true, 'model' => $class, 'query' => $tableMethod)));
-      $form->setValidator(aEntityTools::listForClass($class), new sfValidatorDoctrineChoice(array('multiple' => true, 'model' => $class, 'required' => false, 'query' => $tableMethod)));
+      $list = aEntityTools::listForClass($class);
+      error_log($list);
+      $form->setWidget($list, new sfWidgetFormDoctrineChoice(array('multiple' => true, 'model' => $class, 'query' => $tableMethod)));
+      $form->setValidator($list, new sfValidatorDoctrineChoice(array('multiple' => true, 'model' => $class, 'required' => false, 'query' => $tableMethod)));
     }
   }
 
