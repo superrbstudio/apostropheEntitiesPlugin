@@ -14,12 +14,12 @@ class aEntityTools
   static public function getClassInfos()
   {
     $infos = array();
-    $labels = sfConfig::get('app_aEntities_labels', array());
+    $options = sfConfig::get('app_aEntities_entities', array());
     foreach (Doctrine::getTable('aEntity')->getOption('subclasses') as $class)
     {
       $infos[$class] = array(
-        'singular' => isset($labels[$class]['singular']) ? $labels[$class]['singular'] : $class, 
-        'plural' => isset($labels[$class]['plural']) ? $labels[$class]['plural'] : ($class . 's'), 
+        'singular' => isset($options[$class]['labels']['singular']) ? $options[$class]['labels']['singular'] : $class, 
+        'plural' => isset($options[$class]['labels']['plural']) ? $options[$class]['labels']['plural'] : ($class . 's'), 
         'css' => strtolower($class), 
         'cssPlural' => strtolower($class) . 's',
         'list' => strtolower($class) . '_list',

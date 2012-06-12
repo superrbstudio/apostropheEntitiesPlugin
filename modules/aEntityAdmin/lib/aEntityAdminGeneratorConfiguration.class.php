@@ -17,14 +17,15 @@ class aEntityAdminGeneratorConfiguration extends BaseaEntityAdminGeneratorConfig
   		{
   			throw new sfException("No class parameter in current route, cannot implement admin of aEntity subclasses");
   		}
+      $infos = aEntityTools::getClassInfos();
   		$this->class = ucfirst($request->getParameter('class'));
-	  	$validClasses = Doctrine::getTable('aEntity')->getOption('subclasses');
-	  	if (!in_array($this->class, $validClasses))
+	  	if (!isset($infos[$this->class]))
 	  	{
-	  		throw new sfException("Must be one of " . implode(', ', $validClasses));
+	  		throw new sfException("Must be one of " . implode(', ', array_keys($infos)));
 	  	}
-	  	$this->singular = $this->class;
-	  	$this->plural = $this->singular . 's';
+      $info = $infos[$this->class];
+	  	$this->singular = $info['singular'];
+	  	$this->plural = $info['plural'];
 		}
 	}
 	public function getListTitle()
