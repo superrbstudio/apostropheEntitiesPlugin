@@ -28,7 +28,7 @@ abstract class PluginaEntityForm extends BaseaEntityForm
     }
   	// Redundant relation pointing back the other way
   	unset($this['a_entity_list']);
-    entityTools::formConfigure($this, true);
+    aEntityTools::formConfigure($this, true);
   }
 
   /**
