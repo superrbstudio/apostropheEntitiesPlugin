@@ -1,0 +1,8 @@
+a_entity:
+  class: aEntityRouteCollection
+  options:
+    model:                aEntity
+    module:               aEntityAdmin
+    prefix_path:          /manage/:class
+    column:               id
+    with_wildcard_routes: true

@@ -1,0 +1,161 @@
+aEntity:
+  actAs:
+    Timestampable: ~
+    Taggable: ~
+    Sluggable:
+      fields: [name]
+      unique: true
+      builder: aMediaTools::slugify
+  columns:
+    type: 
+      type: string(50)
+      notnull: true
+    name:
+      type: string(200)
+      notnull: true
+    slug:
+      type: string(210)
+      unique: true
+      notnull: true
+    # This is the person who is allowed to edit the
+    # organization's content, must pay the bill if the
+    # organization has an upgraded membership, etc.
+    owner_id:
+      type: integer
+    # It's possible to "claim" an organization. If you do that
+    # your claim has to be verified before your privileges
+    # go into effect
+    owner_confirmed:
+      type: boolean
+      default: false
+  relations:
+    Owner:
+      type: one
+      class: sfGuardUser
+      onDelete: SET NULL
+      local: owner_id
+      foreign: id
+    Entities:
+      type: many
+      class: aEntity
+      refClass: aEntityToEntity
+      local: entity_1_id
+      foreign: entity_2_id
+    BlogItems:
+      type: many
+      class: aBlogItem
+      refClass: aEntityToBlogItem
+      local: entity_id
+      foreign: blog_item_id
+      foreignAlias: Entities
+    Categories:
+      type: many
+      class: aCategory
+      refClass: aEntityToCategory
+      local: entity_id
+      foreign: category_id
+      foreignAlias: Entities
+    Pages:
+      type: many
+      class: aPage
+      refClass: aEntityToPage
+      local: entity_id
+      foreign: page_id
+      foreignAlias: Entities
+
+aEntityToCategory:
+  columns:
+    entity_id:
+      type: integer
+      primary: true
+    category_id:
+      type: integer
+      primary: true
+  relations:
+    Entity:
+      foreignAlias: EntityCategories
+      class: aEntity
+      local: entity_id
+      onDelete: CASCADE
+    Category:
+      foreignAlias: EntityCategories
+      class: aCategory
+      local: category_id
+      onDelete: CASCADE
+
+aEntityToPage:
+  columns:
+    entity_id:
+      type: integer
+      primary: true
+    page_id:
+      type: integer
+      primary: true
+  relations:
+    Entity:
+      foreignAlias: EntityPages
+      class: aEntity
+      local: entity_id
+      onDelete: CASCADE
+    Page:
+      foreignAlias: EntityPages
+      class: aPage
+      local: page_id
+      onDelete: CASCADE
+
+aEntityToEntity:
+  columns:
+    entity_1_id:
+      type: integer
+      primary: true
+    entity_2_id:
+      type: integer
+      primary: true
+  relations:
+    Entity_1:
+      foreignAlias: EntityEntities
+      class: aEntity
+      local: entity_1_id
+      onDelete: CASCADE
+    Entity:
+      foreignAlias: EntityEntities
+      class: aEntity
+      local: entity_2_id
+      onDelete: CASCADE
+
+aEntityToBlogItem:
+  columns:
+    blog_item_id:
+      type: integer
+      primary: true
+    entity_id:
+      type: integer
+      primary: true
+  relations:
+    BlogItem:
+      foreignAlias: EntityBlogItems
+      class: aBlogItem
+      local: blog_item_id
+      onDelete: CASCADE
+    Entity:
+      foreignAlias: EntityBlogItems
+      class: aEntity
+      local: entity_id
+      onDelete: CASCADE
+
+# Example subclasses
+
+# Organization:
+#   inheritance:
+#     extends: aEntity
+#     type: column_aggregation
+#     keyField: type
+#     keyValue: 'Organization'
+
+# Person:
+#   inheritance:
+#     extends: Entity
+#     type: column_aggregation
+#     keyField: type
+#     keyValue: 'Person'
+
