@@ -12,5 +12,63 @@
  */
 abstract class PluginaEntity extends BaseaEntity
 {
+	/**
+	 * limit and offset options. Returns posts in reverse chrono order
+	 */
+    public function getSortedPosts($options)
+    {
+    	return $this->getSortedBlogItems(array_merge($options, array('blogItemType' => 'post')));
+    }
 
+	/**
+	 * limit and offset options. Returns upcoming events in forward chrono order
+	 */
+    public function getSortedEvents($options)
+    {
+    	return $this->getSortedBlogItems(array_merge($options, array('blogItemType' => 'event')));
+    }
+
+    /**
+     *
+     * Obtain blog posts and events relating to an entity, with their virtual pages
+     * hydrated and ready to use.
+     *
+     * limit, offset and blogItemType options accepted. blogItemType can be post or event.
+     * Sort is reverse chronological unles blogItemType is event, in which case 
+     * upcoming events in forward chronological order are returned
+     *
+     * You want to use a reasonably conservative limit as hydrating pages is expensive.
+     */
+    public function getSortedBlogItems($options)
+    {
+    	$limit = isset($options['limit']) ? $options['limit'] : null;
+    	$offset = $offset = isset($options['offset']) ? $options['offset'] : null;
+    	$blogItemType = isset($options['blogItemType']) ? $options['blogItemType'] : null;
+    	$q = Doctrine::getTable('aBlogItem')->createQuery('p')->addWhere('p.status = "published"');
+    	$q->innerJoin('p.Entities e WITH e.id = ?', $this->id);
+    	if ($blogItemType === 'event')
+    	{
+    		$q->andWhere('p.start_date >= NOW() OR (p.start_date <= NOW() AND p.end_date >= NOW())');
+			$q->orderBy('p.start_date asc');
+		}
+		else
+		{
+			$q->orderBy('p.published_at desc');
+    	}
+    	if (!is_null($blogItemType))
+    	{
+    		$q->where('p.type = ?', $blogItemType);
+    	}
+		if (!is_null($limit))
+		{
+			$q->limit($limit);
+		}    	
+		if (!is_null($offset))
+		{
+			$q->offset($offset);
+		}
+		$posts = $q->execute();
+		aBlogItemTable::populatePages($posts);
+		return $posts;
+    }
 }

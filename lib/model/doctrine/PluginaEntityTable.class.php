@@ -16,4 +16,9 @@ class PluginaEntityTable extends Doctrine_Table
     {
         return Doctrine_Core::getTable('PluginaEntity');
     }
+
+    public function findAllSorted()
+    {
+    	return $this->createQuery('e')->orderBy('e.name')->execute();
+    }
 }
