@@ -25,7 +25,14 @@ class PluginaEntityTable extends Doctrine_Table
     public function findAllSortedBody($options = array())
     {
       $hydrate = isset($options['hydrate']) ? $options['hydrate'] : Doctrine_Core::HYDRATE_RECORD;
-      return $this->createQuery('e')->orderBy('e.name')->execute(array(), $hydrate);
+      $query = $this->createQuery('e');
+      $this->addOrderBy($query);
+      return $query->execute(array(), $hydrate);
+    }
+
+    public function addOrderBy($query)
+    {
+      $query->orderBy('e.name');
     }
 
     public function findAllSortedArray()
