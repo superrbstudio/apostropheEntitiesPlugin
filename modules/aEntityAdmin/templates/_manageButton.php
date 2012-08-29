@@ -1,4 +1,6 @@
-<?php // Include me from your a/globalProjectButtons partial or just adapt me accordingly ?>
+<?php // Adapt me for your needs and include me at project level. Organization should be ?>
+<?php // replaced with a reasonable default entity subclass for your situation ?>
+
 <?php if ($sf_user->hasCredential('admin')): ?>
   <li><?php echo link_to('<span class="icon"></span>Manage', '@a_entity?class=Organization', array('class' => 'a-btn icon a-users no-bg alt')) ?></li>
 <?php endif ?>
