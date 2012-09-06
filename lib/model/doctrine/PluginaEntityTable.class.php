@@ -7,37 +7,55 @@
  */
 class PluginaEntityTable extends Doctrine_Table
 {
-    /**
-     * Returns an instance of this class.
-     *
-     * @return object PluginaEntityTable
-     */
-    public static function getInstance()
-    {
-        return Doctrine_Core::getTable('PluginaEntity');
-    }
+  /**
+   * Returns an instance of this class.
+   *
+   * @return object PluginaEntityTable
+   */
+  public static function getInstance()
+  {
+      return Doctrine_Core::getTable('PluginaEntity');
+  }
 
-    public function findAllSorted()
-    {
-      return $this->findAllSortedBody(array('hydrate' => Doctrine_Core::HYDRATE_RECORD));
-    }
+  public function findAllSorted()
+  {
+    return $this->findAllSortedBody(array('hydrate' => Doctrine_Core::HYDRATE_RECORD));
+  }
 
-    public function findAllSortedBody($options = array())
-    {
-      $hydrate = isset($options['hydrate']) ? $options['hydrate'] : Doctrine_Core::HYDRATE_RECORD;
-      $query = $this->createQuery('e');
-      $this->addOrderBy($query);
-      return $query->execute(array(), $hydrate);
-    }
+  public function findAllSortedBody($options = array())
+  {
+    $hydrate = isset($options['hydrate']) ? $options['hydrate'] : Doctrine_Core::HYDRATE_RECORD;
+    $query = $this->createQuery('e');
+    $this->addOrderBy($query);
+    return $query->execute(array(), $hydrate);
+  }
 
-    public function addOrderBy($query)
-    {
-      $query->orderBy('e.name');
-    }
+  /**
+   * See also comparator, which must perform the same sort in PHP land with two
+   * existing elements
+   */
+  public function addOrderBy($query)
+  {
+    $query->orderBy('e.name');
+  }
 
-    public function findAllSortedArray()
-    {
-      return $this->findAllSortedBody(array('hydrate' => Doctrine_Core::HYDRATE_ARRAY));
-    }
+  public function findAllSortedArray()
+  {
+    return $this->findAllSortedBody(array('hydrate' => Doctrine_Core::HYDRATE_ARRAY));
+  }
 
+  /**
+   * This sorting method is used when a query has already returned a mixed group of
+   * entities that have different sorting rules (example: people and organizations)
+   * and we have pulled out a subset of them that share a single subclass and wish to
+   * sort those according to the appropriate rule for that subclass. Note that this
+   * must do the same thing as addOrderBy() if you override it.
+   *
+   * Note: array hydration must be supported here, so use []
+   */
+
+  public function comparator($e1, $e2)
+  {
+    return strcasecmp($e1['name'], $e2['name']);
+  }
 }
