@@ -43,15 +43,18 @@ class aEntityTools
     foreach (Doctrine::getTable('aEntity')->getOption('subclasses') as $class)
     {
       // Exclude self
-      $tableMethod = Doctrine::getTable($class)->createQuery();
+      $table = Doctrine::getTable($class);
+      $query = $table->createQuery('e');
       if ($excludeSelf && (!$form->isNew()))
       {
-        $tableMethod->andWhere('id <> ?', $form->getObject()->getId());
+        $query->andWhere('e.id <> ?', $form->getObject()->getId());
       }
+      $table->addOrderBy($query);
+
       $list = aEntityTools::listForClass($class);
       error_log($list);
-      $form->setWidget($list, new sfWidgetFormDoctrineChoice(array('multiple' => true, 'model' => $class, 'query' => $tableMethod)));
-      $form->setValidator($list, new sfValidatorDoctrineChoice(array('multiple' => true, 'model' => $class, 'required' => false, 'query' => $tableMethod)));
+      $form->setWidget($list, new sfWidgetFormDoctrineChoice(array('multiple' => true, 'model' => $class, 'query' => $query)));
+      $form->setValidator($list, new sfValidatorDoctrineChoice(array('multiple' => true, 'model' => $class, 'required' => false, 'query' => $query)));
     }
   }
 
@@ -63,20 +66,38 @@ class aEntityTools
    */
   static public function formGetEntitiesByClass($form)
   {
+    /**
+     * Cache for the life of the current request
+     */
     if (!isset($form->aEntitiesByClass))
     {
-      $entitiesByClass = array();
-      foreach (Doctrine::getTable('aEntity')->getOption('subclasses') as $class)
-      {
-        $entitiesByClass[$class] = array();
-      }
-      foreach ($form->getObject()->Entities as $entity)
-      {
-        $entitiesByClass[$entity->type][$entity->id] = $entity;
-      }
-      $form->aEntitiesByClass = $entitiesByClass;
+      $form->aEntitiesByClass = aEntityTools::groupEntitiesByClass($form->getObject()->Entities);
     }
     return $form->aEntitiesByClass;
+  }
+
+  /**
+   * Group all entities in the passed array or collection into
+   * separate arrays by subclass. Sorts them according to the
+   * comparator method of each table subclass
+   */
+  static public function groupEntitiesByClass($entities)
+  {
+    $entitiesByClass = array();
+    $classes = Doctrine::getTable('aEntity')->getOption('subclasses');
+    foreach ($classes as $class)
+    {
+      $entitiesByClass[$class] = array();
+    }
+    foreach ($entities as $entity)
+    {
+      $entitiesByClass[$entity->type][$entity->id] = $entity;
+    }
+    foreach ($classes as $class)
+    {
+      uasort($entitiesByClass[$class], array(Doctrine::getTable($class), 'comparator'));
+    }
+    return $entitiesByClass;
   }
 
   static public function formUpdateDefaultsFromObject($form)
