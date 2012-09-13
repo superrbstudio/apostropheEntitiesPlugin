@@ -18,14 +18,36 @@ class aEntityTools
     foreach (Doctrine::getTable('aEntity')->getOption('subclasses') as $class)
     {
       $infos[$class] = array(
+        // name is the class name
+        'name' => $class,
+        // singular is more human-friendly, defaults to class name
         'singular' => isset($options[$class]['labels']['singular']) ? $options[$class]['labels']['singular'] : $class, 
         'plural' => isset($options[$class]['labels']['plural']) ? $options[$class]['labels']['plural'] : ($class . 's'), 
-        'css' => strtolower($class), 
-        'cssPlural' => strtolower($class) . 's',
+        // css is suitable for a slug or css class name
+        'css' => isset($options[$class]['css']['singular']) ? $options[$class]['css']['singular'] : strtolower($class), 
+        'cssPlural' => isset($options[$class]['css']['plural']) ? $options[$class]['css']['plural'] : strtolower($class) . 's', 
+        // For list widgets in forms, not user-visible
         'list' => strtolower($class) . '_list',
       );
     }
     return $infos;
+  }
+
+  /**
+   * Helpful when using the css plural (which is a nice lowercase
+   * hyphenated name for the class) in a route parameter
+   */
+  static public function findClassInfoByCssPlural($cssPlural)
+  {
+    $classInfos = aEntityTools::getClassInfos();
+    foreach ($classInfos as $class => $classInfo)
+    {
+      if ($classInfo['cssPlural'] === $cssPlural)
+      {
+        return $classInfo;
+      }
+    }
+    return null;
   }
 
   /**
@@ -52,7 +74,6 @@ class aEntityTools
       $table->addOrderBy($query);
 
       $list = aEntityTools::listForClass($class);
-      error_log($list);
       $form->setWidget($list, new sfWidgetFormDoctrineChoice(array('multiple' => true, 'model' => $class, 'query' => $query)));
       $form->setValidator($list, new sfValidatorDoctrineChoice(array('multiple' => true, 'model' => $class, 'required' => false, 'query' => $query)));
     }
