@@ -87,4 +87,15 @@ abstract class PluginaEntity extends BaseaEntity
     }
     return $result;
   }
+
+  /**
+   * Used to generate random entities in the
+   * apostrophe:generate-test-entities task.
+   * Override this method to set fields unique
+   * to your entity
+   */
+  public function randomize($wordSource)
+  {
+    $this->setName(implode(' ', $wordSource->getWords(mt_rand(1, 5))));
+  }
 }
