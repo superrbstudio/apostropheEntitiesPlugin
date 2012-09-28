@@ -73,26 +73,33 @@ abstract class PluginaEntity extends BaseaEntity
   }
 
   /**
-   * Get all related entities of a particular subclass
+   * Return all related entities, grouped by subclass, sorted
+   * in their preferred order via their comparators. Refactored to
+   * the table class to support array hydration
+   */
+  public function groupEntitiesBySubclass()
+  {
+    return aEntityTable::groupEntitiesBySubclass($this);
+  }
+
+  /**
+   * Get all related entities of a particular subclass. Now
+   * utilizes groupEntitiesBySubclass and uses the preferred
+   * comparator for the subclass. Refactored to
+   * the table class to support array hydration
    */
   public function getEntitiesBySubclass($subclass)
   {
-    $result = array();
-    foreach ($this->getEntities() as $entity)
-    {
-      if (is_a($entity, $subclass))
-      {
-        $result[] = $entity;
-      }
-    }
-    return $result;
+    return aEntityTable::getEntitiesBySubclass($this, $subclass);
+    $entitiesBySubclass = $this->groupEntitiesBySubclass();
+    return $entitiesBySubclass[$subclass];
   }
 
   /**
    * Used to generate random entities in the
    * apostrophe:generate-test-entities task.
-   * Override this method to set fields unique
-   * to your entity
+   * Override this method to set additional fields unique
+   * to your entity, set more appropriate names, etc.
    */
   public function randomize($wordSource)
   {

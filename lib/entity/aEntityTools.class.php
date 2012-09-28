@@ -112,7 +112,7 @@ class aEntityTools
     }
     foreach ($entities as $entity)
     {
-      $entitiesByClass[$entity->type][$entity->id] = $entity;
+      $entitiesByClass[$entity['type']][$entity['id']] = $entity;
     }
     foreach ($classes as $class)
     {

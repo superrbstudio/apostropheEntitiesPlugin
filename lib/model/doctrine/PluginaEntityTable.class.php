@@ -17,16 +17,48 @@ class PluginaEntityTable extends Doctrine_Table
       return Doctrine_Core::getTable('PluginaEntity');
   }
 
+  /**
+   * Convenience functions wrapping findAllSortedBody.
+   */
+
   public function findAllSorted()
   {
     return $this->findAllSortedBody(array('hydrate' => Doctrine_Core::HYDRATE_RECORD));
   }
 
+  public function findAllSortedArray()
+  {
+    return $this->findAllSortedBody(array('hydrate' => Doctrine_Core::HYDRATE_ARRAY));
+  }
+
+  /**
+   * These are helpful as table methods for sfDoctrinePager
+   */
+  public function findAllSortedQuery()
+  {
+    return $this->findAllSortedBody(array('queryOnly' => true));
+  }
+
+  public function findAllSortedAndRelatedQuery()
+  {
+    return $this->findAllSortedBody(array('queryOnly' => true, 'related' => true));
+  }
+
   public function findAllSortedBody($options = array())
   {
     $hydrate = isset($options['hydrate']) ? $options['hydrate'] : Doctrine_Core::HYDRATE_RECORD;
+    $related = isset($options['related']) ? $options['related'] : null;
     $query = $this->createQuery('e');
     $this->addOrderBy($query);
+    if ($related)
+    {
+      $query->leftJoin('e.Entities r');
+    }
+    $queryOnly = isset($options['queryOnly']) ? $options['queryOnly'] : null;
+    if ($queryOnly)
+    {
+      return $query;
+    }
     return $query->execute(array(), $hydrate);
   }
 
@@ -37,11 +69,6 @@ class PluginaEntityTable extends Doctrine_Table
   public function addOrderBy($query)
   {
     $query->orderBy('e.name');
-  }
-
-  public function findAllSortedArray()
-  {
-    return $this->findAllSortedBody(array('hydrate' => Doctrine_Core::HYDRATE_ARRAY));
   }
 
   /**
@@ -57,5 +84,31 @@ class PluginaEntityTable extends Doctrine_Table
   public function comparator($e1, $e2)
   {
     return strcasecmp($e1['name'], $e2['name']);
+  }
+
+  protected $related = array();
+
+  /**
+   * Return all related entities, grouped by subclass, sorted
+   * in their preferred order via their comparators
+   */
+  public function groupEntitiesBySubclass($entity)
+  {
+    if (!isset($this->related[$entity['id']]))
+    {
+      $this->related[$entity['id']] = aEntityTools::groupEntitiesBySubclass($entity['Entities']);
+    }
+    return $this->related[$entity['id']];
+  }
+
+  /**
+   * Get all related entities of a particular subclass. Now
+   * utilizes groupEntitiesBySubclass and uses the preferred
+   * comparator for the subclass
+   */
+  public function getEntitiesBySubclass($entity, $subclass)
+  {
+    $entitiesBySubclass = $this->groupEntitiesBySubclass($entity);
+    return $entitiesBySubclass[$subclass];
   }
 }
