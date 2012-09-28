@@ -49,11 +49,11 @@ abstract class PluginaEntity extends BaseaEntity
   	if ($blogItemType === 'event')
   	{
   		$q->andWhere('p.start_date >= NOW() OR (p.start_date <= NOW() AND p.end_date >= NOW())');
-		$q->orderBy('p.start_date asc');
-	}
-	else
-	{
-		$q->orderBy('p.published_at desc');
+  		$q->orderBy('p.start_date asc');
+  	}
+  	else
+  	{
+  		$q->orderBy('p.published_at desc');
   	}
   	if (!is_null($blogItemType))
   	{
