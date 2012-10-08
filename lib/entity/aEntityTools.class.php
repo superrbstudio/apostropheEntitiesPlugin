@@ -8,8 +8,10 @@
 class aEntityTools
 {
   /**
-   * Everything you need to know to label each subclass, apply a CSS class to it, 
-   * display its list widget in a form... that kind of thing should be returned here
+   * Everything you need to know to label each subclass, apply a CSS 
+   * class to it, display its list widget in a form, link to its
+   * best permalink page (or something that redirects there)... that 
+   * kind of thing should be returned here
    */
   static public function getClassInfos()
   {
@@ -28,6 +30,7 @@ class aEntityTools
         'cssPlural' => isset($options[$class]['css']['plural']) ? $options[$class]['css']['plural'] : strtolower($class) . 's', 
         // For list widgets in forms, not user-visible
         'list' => strtolower($class) . '_list',
+        'directoryRoute' => isset($options[$class]['directoryRoute']) ? $options[$class]['directoryRoute'] : false
       );
     }
     return $infos;

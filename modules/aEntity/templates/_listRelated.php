@@ -4,16 +4,14 @@
 <?php // crafted for use with the blog and should register itself ?>
 <?php // automatically. ?>
 
-<?php // Generates links via a directory route that you supply, ?>
-<?php // which expects slug and class parameters. The class parameter ?>
-<?php // will be set to the cssPlural of the class (people, not Person) ?>
-<?php // as it makes a much nicer URL. ?>
+<?php // Generates links via the directoryRoute option for each class ?>
+<?php // (see aEntityTools) which expects a slug parameter. If there is no ?>
+<?php // directoryRoute option configured, no link is generated. ?>
 
 <?php // If the compact option is true, a comma-separated list is used. ?>
 <?php // otherwise a ul list is used. ?>
 
 <?php $entity = $sf_data->getRaw('entity') ?>
-<?php $directoryRoute = $sf_data->getRaw('directoryRoute') ?>
 <?php $compact = isset($compact) ? $sf_data->getRaw('compact') : false ?>
 
 <?php $entitiesByClass = aEntityTools::groupEntitiesByClass($entity['Entities']) ?>
@@ -38,7 +36,11 @@
             <li class="entity">
           <?php endif ?>
 
-          <?php echo link_to(aHtml::entities($entity['name']), url_for(aUrl::addParams($directoryRoute, array('class' => $info['cssPlural'], 'slug' => $entity['slug'])))) ?>
+          <?php if ($info['directoryRoute']): ?>
+            <?php echo link_to(aHtml::entities($entity['name']), url_for(aUrl::addParams('@' . $info['directoryRoute'], array('slug' => $entity['slug'])))) ?>
+          <?php else: ?>
+            <?php echo aHtml::entities($entity['name']) ?>
+          <?php endif ?>
 
           <?php if ($compact): ?>
             <?php echo (($i < count($entities)) ? ', ' : '')?>
