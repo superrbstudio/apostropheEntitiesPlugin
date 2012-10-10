@@ -66,9 +66,9 @@ class PluginaEntityTable extends Doctrine_Table
    * See also comparator, which must perform the same sort in PHP land with two
    * existing elements
    */
-  public function addOrderBy($query)
+  public function addOrderBy($query, $order = "asc")
   {
-    $query->orderBy('e.name');
+    $query->orderBy("e.name $order");
   }
 
   /**
