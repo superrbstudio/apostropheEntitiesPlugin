@@ -30,10 +30,21 @@ class aEntityTools
         'cssPlural' => isset($options[$class]['css']['plural']) ? $options[$class]['css']['plural'] : strtolower($class) . 's', 
         // For list widgets in forms, not user-visible
         'list' => strtolower($class) . '_list',
-        'directoryRoute' => isset($options[$class]['directoryRoute']) ? $options[$class]['directoryRoute'] : false
+        'directoryRoute' => isset($options[$class]['directoryRoute']) ? $options[$class]['directoryRoute'] : false,
+        'directoryFilters' => isset($options[$class]['directoryFilters']) ? $options[$class]['directoryFilters'] : array()
       );
     }
     return $infos;
+  }
+
+  static public function getClassInfo($name)
+  {
+    $classInfos = aEntityTools::getClassInfos();
+    if (isset($classInfos[$name]))
+    {
+      return $classInfos[$name];
+    }
+    return null;
   }
 
   /**
