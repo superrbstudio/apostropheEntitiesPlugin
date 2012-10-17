@@ -36,8 +36,8 @@
             <li class="entity">
           <?php endif ?>
 
-          <?php if ($info['directoryRoute']): ?>
-            <?php echo link_to(aHtml::entities($entity['name']), url_for(aUrl::addParams('@' . $info['directoryRoute'], array('slug' => $entity['slug'])))) ?>
+          <?php if ($info['route']): ?>
+            <?php echo link_to(aHtml::entities($entity['name']), url_for(aUrl::addParams('@' . $info['route'], array('slug' => $entity['slug'])))) ?>
           <?php else: ?>
             <?php echo aHtml::entities($entity['name']) ?>
           <?php endif ?>

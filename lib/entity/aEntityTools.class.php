@@ -30,8 +30,8 @@ class aEntityTools
         'cssPlural' => isset($options[$class]['css']['plural']) ? $options[$class]['css']['plural'] : strtolower($class) . 's', 
         // For list widgets in forms, not user-visible
         'list' => strtolower($class) . '_list',
-        'directoryRoute' => isset($options[$class]['directoryRoute']) ? $options[$class]['directoryRoute'] : false,
-        'directoryFilters' => isset($options[$class]['directoryFilters']) ? $options[$class]['directoryFilters'] : array()
+        'route' => isset($options[$class]['route']) ? $options[$class]['route'] : false,
+        'filters' => isset($options[$class]['filters']) ? $options[$class]['filters'] : array()
       );
     }
     return $infos;
@@ -45,6 +45,25 @@ class aEntityTools
       return $classInfos[$name];
     }
     return null;
+  }
+
+  /**
+   * Return information about entity classes that should
+   * appear in a list of entity classes browsable via the
+   * directory. (Your project may have classes that are not.)
+   */
+  static public function getMenu()
+  {
+    $info = sfConfig::get('app_aEntities_directory');
+    $result = array();
+    if (isset($info['menu']))
+    {
+      foreach ($info['menu'] as $class) 
+      {
+        $result[$class] = aEntityTools::getClassInfo($class);
+      }
+    }
+    return $result;
   }
 
   /**
