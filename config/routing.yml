@@ -1,8 +1,26 @@
-a_entity:
-  class: aEntityRouteCollection
-  options:
-    model:                aEntity
-    module:               aEntityAdmin
-    prefix_path:          /manage/:class
-    column:               id
-    with_wildcard_routes: true
+# Put these in your own routing.yml where you have control over them.
+# It's tough to override and/or remove routes in a plugin's routing.yml.
+#
+# a_entity_admin:
+#   class: aEntityRouteCollection
+#   options:
+#     model:                aEntity
+#     module:               aEntityAdmin
+#     prefix_path:          /manage/:class
+#     column:               id
+#     with_wildcard_routes: true
+
+# a_entity_index:
+#   url: /directory
+#   param: { module: aEntity, action: index }
+
+# The 'class' will actually be the cssPlural, a nice URL-friendly
+# plural name for the entity.
+
+# a_entity_class:
+#   url: /directory/:class
+#   param: { module: aEntity, action: class }
+
+# a_entity_show:
+#   url: /directory/:class/:slug
+#   param: { module: aEntity, action: show }

@@ -21,8 +21,8 @@
     <div class="a-blog-item-<?php echo $info['cssPlural'] ?> <?php echo $info['cssPlural'] ?>">
       <span class="a-blog-item-<?php echo $info['css'] ?>-label"><?php echo $info['plural'] ?>:</span>
       <?php $i = 1; foreach ($entities as $entity): ?>
-        <?php if ($info['directoryRoute']): ?>
-          <?php echo link_to(aHtml::entities($entity['name']), url_for(aUrl::addParams('@' . $info['directoryRoute'], array('slug' => $entity['slug'])))) ?>
+        <?php if ($info['route']): ?>
+          <?php echo link_to(aHtml::entities($entity['name']), url_for(aUrl::addParams('@' . $info['route'], array('slug' => $entity['slug'])))) ?>
         <?php else: ?>
           <?php echo aHtml::entities($entity['name']) ?>
         <?php endif ?>

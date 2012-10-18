@@ -37,6 +37,11 @@ class aEntityTools
     return $infos;
   }
 
+  static public function getClasses()
+  {
+    return array_keys(aEntityTools::getClassInfos());
+  }
+
   static public function getClassInfo($name)
   {
     $classInfos = aEntityTools::getClassInfos();

@@ -7,14 +7,15 @@ generator:
     with_show:             false
     singular:              entity
     plural:                entities
-    route_prefix:          a_entity
+    route_prefix:          a_entity_admin
     with_doctrine_route:   true
     actions_base_class:    sfActions
 
     config:
       actions: ~
       fields:  ~
-      list:    ~
+      list:
+        table_method: doSelectJoinArea
       filter:  ~
       form:    ~
       edit:    ~
