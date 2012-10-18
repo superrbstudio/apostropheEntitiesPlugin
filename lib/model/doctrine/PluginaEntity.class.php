@@ -44,8 +44,24 @@ abstract class PluginaEntity extends BaseaEntity
   	$limit = isset($options['limit']) ? $options['limit'] : null;
   	$offset = $offset = isset($options['offset']) ? $options['offset'] : null;
   	$blogItemType = isset($options['blogItemType']) ? $options['blogItemType'] : null;
+    
+    // Fetch posts by a particular author rather than related to a 
+    // particular entity. It's the difference between being the 
+    // journalist and being the subject of the piece. This lives here 
+    // because it is useful when the entity has an 'owner_id' column 
+    // relating it to an sfGuardUser. But not every project will, so 
+    // we don't hardcode that part.
+    $byAuthorId = isset($options['byAuthorId']) ? $options['byAuthorId'] : null;
+
   	$q = Doctrine::getTable('aBlogItem')->createQuery('p')->addWhere('p.status = "published"');
-  	$q->innerJoin('p.Entities e WITH e.id = ?', $this->id);
+    if ($byAuthorId)
+    {
+      $q->andWhere('p.author_id = ?', $byAuthorId);
+    }
+    else
+    {
+      $q->innerJoin('p.Entities e WITH e.id = ?', $this->id);
+    }
   	if ($blogItemType === 'event')
   	{
   		$q->andWhere('p.start_date >= NOW() OR (p.start_date <= NOW() AND p.end_date >= NOW())');
