@@ -38,9 +38,16 @@ abstract class PluginaEntity extends BaseaEntity
    * upcoming events in forward chronological order are returned
    *
    * You want to use a reasonably conservative limit as hydrating pages is expensive.
+   *
+   * If you specify 'array' => true, you'll get back an array a lot more
+   * cheaply, but you won't have access to the body of any post or event,
+   * and the title will be that most recently set for any language on this
+   * post (most folks turn out not to internationalize individual events,
+   * so this isn't much of a problem).
    */
   public function getSortedBlogItems($options)
   {
+    $array = isset($options['array']) ? $options['array'] : null;
   	$limit = isset($options['limit']) ? $options['limit'] : null;
   	$offset = $offset = isset($options['offset']) ? $options['offset'] : null;
   	$blogItemType = isset($options['blogItemType']) ? $options['blogItemType'] : null;
@@ -83,6 +90,10 @@ abstract class PluginaEntity extends BaseaEntity
 		{
 			$q->offset($offset);
 		}
+    if ($array) 
+    {
+      return $q->fetchArray();
+    }
 		$posts = $q->execute();
 		aBlogItemTable::populatePages($posts);
 		return $posts;
