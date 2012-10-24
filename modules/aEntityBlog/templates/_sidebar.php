@@ -4,9 +4,9 @@
 <?php foreach ($itemsByClass as $class => $items): ?>
   <?php if (count($items) > 1): ?>
     <hr class="a-hr" />
-    <div class="a-subnav-section entities <?php echo $class ?>">
-      <h4 class="filter-label<?php echo ($sf_params->get('entity')) ? ' open' : '' ?>"><?php echo a_($classInfos[$class]['plural']) ?></h4>
-      <div class="a-filter-options blog clearfix<?php echo ($sf_params->get('entity')) ? ' open' : '' ?>">
+    <div class="a-subnav-section entities <?php echo $classInfos[$class]['cssPlural'] ?>">
+      <h4 data-toggles=".<?php echo $classInfos[$class]['cssPlural'] ?> .a-filter-options" class="a-slide-toggle filter-label <?php echo $sf_params->get('entity') ? 'open' : '' ?>"><?php echo a_($classInfos[$class]['plural']) ?></h4>
+      <div class="a-filter-options a-slide-toggled blog clearfix<?php echo ($sf_params->get('entity')) ? ' open' : '' ?>">
         <?php foreach ($items as $entity): ?>
           <?php $selected_entity = ($entity['slug'] === $sf_params->get('entity')) ? $selected : array() ?>
           <div class="a-filter-option">
