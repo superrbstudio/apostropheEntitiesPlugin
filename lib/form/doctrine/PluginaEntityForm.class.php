@@ -23,6 +23,7 @@ abstract class PluginaEntityForm extends BaseaEntityForm
   	unset($this['created_at']);
   	unset($this['updated_at']);
     unset($this['pages_list']);
+    $this->getValidator('name')->setOption('required', true);
     if ($this->getObject()->isNew())
     {
       unset($this['slug']);
