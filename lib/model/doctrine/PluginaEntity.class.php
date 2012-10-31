@@ -80,7 +80,7 @@ abstract class PluginaEntity extends BaseaEntity
   	}
   	if (!is_null($blogItemType))
   	{
-  		$q->where('p.type = ?', $blogItemType);
+  		$q->andWhere('p.type = ?', $blogItemType);
   	}
 		if (!is_null($limit))
 		{
