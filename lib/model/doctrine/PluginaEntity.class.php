@@ -132,4 +132,74 @@ abstract class PluginaEntity extends BaseaEntity
   {
     $this->setName(implode(' ', $wordSource->getWords(mt_rand(1, 5))));
   }
+
+  /**
+   * Mirror the content to a virtual page in order
+   * to participate in Apostrophe site search.
+   */
+  public function postSave($event)
+  {
+    error_log('postSave for ' . $this->getName());
+    $url = $this->getSearchUrl();
+    if (!$url)
+    {
+      error_log('no search url for this object');
+      return;
+    }
+    $page = Doctrine::getTable('aPage')->retrieveBySlug($url);
+    $new = false;
+    if (!$page) 
+    {
+      $new = true;
+      $page = new aPage();
+      $page->setSlug($url);
+      $page->setEngine('aEntity');
+      $page->save();
+    }
+    $page->setTitle($this->getSearchTitle());
+    $slot = $page->createSlot('aText');
+    $slot->value = $this->getSearchText();
+    $slot->save();
+    $page->newAreaVersion('body', 'update', 
+      array(
+        'permid' => 1, 
+        'slot' => $slot));
+  }
+
+  public function preDelete($event)
+  {
+    Doctrine::getTable('aPage')->retrieveBySlug($this->getSearchRoute())->delete();
+  }
+
+  /**
+   * The search route can't be the pretty route used in
+   * the directory because slugs, while rarely changed, 
+   * *can* change and any change to them would screw up
+   * the search results. It should be a route using
+   * an id. However we must make sure there *is* a directory route
+   * for it to redirect to.
+   */
+  public function getSearchUrl()
+  {
+    $classInfo = aEntityTools::getClassInfo(get_class($this));
+    if (!isset($classInfo['route']))
+    {
+      return null;
+    }
+    return '@a_entity_search_result?id=' . $this->id;
+  }
+
+  public function getSearchTitle()
+  {
+    return $this->getName();
+  }
+
+  /**
+   * You probably have more text you'd like to return here
+   * in overrides for your subclasses.
+   */
+  public function getSearchText()
+  {
+    return '';
+  }
 }

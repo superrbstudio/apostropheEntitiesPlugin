@@ -75,6 +75,21 @@ class BaseaEntityActions extends sfActions
   public function executeShow(sfWebRequest $request)
   {
     $this->entity = Doctrine::getTable('aEntity')->findOneBySlug($request->getParameter('slug'));
+    $this->forward404Unless($this->entity);
     $this->classInfo = aEntityTools::getClassInfo(get_class($this->entity));
+  }
+
+  /**
+   * Redirect from a stable, safe id-based URL to the
+   * appropriate slug-based directory URL for this type
+   */
+  public function executeSearchResult(sfWebRequest $request)
+  {
+    $this->entity = Doctrine::getTable('aEntity')->find($request->getParameter('id'));
+    error_log("entity is " . isset($this->entity));
+    $this->forward404Unless($this->entity);
+    $this->classInfo = aEntityTools::getClassInfo(get_class($this->entity));
+    $route = $this->classInfo['route'];
+    return $this->redirect('@' . $route . '?slug=' . $this->entity->slug);
   }
 }

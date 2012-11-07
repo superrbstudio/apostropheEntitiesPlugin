@@ -24,3 +24,10 @@
 # a_entity_show:
 #   url: /directory/:class/:slug
 #   param: { module: aEntity, action: show }
+#
+# This route is safe against changes to slugs and thus suitable
+# for use as a virtual page slug to get content into our search engine.
+#
+# a_entity_search_result:
+#   url: /directory/search-result/:id
+#   param: { module: aEntity, action: searchResult }
