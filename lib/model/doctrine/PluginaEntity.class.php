@@ -139,36 +139,12 @@ abstract class PluginaEntity extends BaseaEntity
    */
   public function postSave($event)
   {
-    error_log('postSave for ' . $this->getName());
-    $url = $this->getSearchUrl();
-    if (!$url)
-    {
-      error_log('no search url for this object');
-      return;
-    }
-    $page = Doctrine::getTable('aPage')->retrieveBySlug($url);
-    $new = false;
-    if (!$page) 
-    {
-      $new = true;
-      $page = new aPage();
-      $page->setSlug($url);
-      $page->setEngine('aEntity');
-      $page->save();
-    }
-    $page->setTitle($this->getSearchTitle());
-    $slot = $page->createSlot('aText');
-    $slot->value = $this->getSearchText();
-    $slot->save();
-    $page->newAreaVersion('body', 'update', 
-      array(
-        'permid' => 1, 
-        'slot' => $slot));
+    Doctrine::getTable('aPage')->mirrorForSearch($this);
   }
 
   public function preDelete($event)
   {
-    Doctrine::getTable('aPage')->retrieveBySlug($this->getSearchRoute())->delete();
+    Doctrine::getTable('aPage')->deleteSearchMirror($this);
   }
 
   /**
