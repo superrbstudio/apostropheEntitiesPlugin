@@ -39,14 +39,7 @@ class BaseaEntityActions extends sfActions
     $this->class = $this->classInfo['name'];
     $this->pager = new sfDoctrinePager($this->class, 10);
     $table = Doctrine::getTable($this->class);
-    $query = $table->createQuery('e');
-    $query->leftJoin('e.Entities r');
-    $query->addSelect('e.*, r.*');
-    $alpha = $request->getParameter('alpha', 'asc');
-    if ($alpha)
-    {
-      $table->addOrderBy($query, $alpha);
-    }
+    $query = $table->findAllSortedBody(array('queryOnly' => true, 'related' => true, 'order' => $request->getParameter('alpha', 'asc')));
     $filterClasses = $this->classInfo['filters'];
     $this->filters = array();
     $n = 1;
@@ -72,11 +65,16 @@ class BaseaEntityActions extends sfActions
     $this->entities = $this->pager->getResults(/*Doctrine::HYDRATE_ARRAY*/);
   }
 
-  public function executeShow(sfWebRequest $request)
+  public function forwardUnlessEntity()
   {
-    $this->entity = Doctrine::getTable('aEntity')->findOneBySlug($request->getParameter('slug'));
+    $this->entity = Doctrine::getTable('aEntity')->findOneBySlug($this->getRequest()->getParameter('slug'));
     $this->forward404Unless($this->entity);
     $this->classInfo = aEntityTools::getClassInfo(get_class($this->entity));
+  }
+  
+  public function executeShow(sfWebRequest $request)
+  {
+    $this->forwardUnlessEntity();
   }
 
   /**

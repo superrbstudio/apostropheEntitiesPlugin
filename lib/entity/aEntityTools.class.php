@@ -210,7 +210,7 @@ class aEntityTools
       throw $form->getErrorSchema();
     }
 
-    if (!$form->getWidget(aEntityTools::listForClass($class)))
+    if (!isset($form[aEntityTools::listForClass($class)]))
     {
       // somebody has unset this widget
       return;
@@ -264,5 +264,47 @@ class aEntityTools
           array('our_id' => $form->getObject()->id, 'other_id' => $id));
       }
     }
+  }
+
+  /**
+   * Convenient helper for creating an executeImage action
+   * in any module that edits entities. This code accepts an
+   * uploaded image file and scales it in sizes as specified
+   * by app_aEntities_imageSizes, dropping it in /uploads/entities/5.jpg
+   * (where the id of the entity is 5). This is helpful for creating
+   * an official headshot for the entity if you do not wish to
+   * associate entities with media items in Apostrophe's library.
+   *
+   * The entity must already be in $actions->entity.
+   * 
+   * Returns true on a successful upload, false if nothing 
+   * was uploaded or an error took place.
+   *
+   * Assumes your entities have a has_image boolean property
+   * that can be set.
+   *
+   * Typical usage: aEntityTools::executeImage($this, $request)
+   */
+  static public function executeImage($actions, sfWebRequest $request)
+  {
+    $actions->imageForm = new aEntityImageForm();
+    if (($request->getMethod() === 'POST') && ($request->getParameter('image')))
+    {
+      $actions->imageForm->bind($request->getParameter('image'), $request->getFiles('image'));
+      if ($actions->imageForm->isValid())
+      {
+        $file = $actions->imageForm->getValue('file');
+        $sizes = sfConfig::get('app_aEntities_imageSizes');
+        foreach ($sizes as $name => $settings)
+        {
+          $final = sfConfig::get('sf_upload_dir') . '/entities/' . $actions->entity->getId() . '.' . $name . '.jpg';
+          aImageConverter::cropOriginal($file->getTempName(), $final, $settings['width'], $settings['height']);
+        }
+        $actions->entity->setHasImage(true);
+        $actions->entity->save();
+        return true;
+      }
+    }
+    return false;
   }
 }

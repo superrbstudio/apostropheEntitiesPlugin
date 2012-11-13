@@ -47,19 +47,30 @@ class PluginaEntityTable extends Doctrine_Table
   public function findAllSortedBody($options = array())
   {
     $hydrate = isset($options['hydrate']) ? $options['hydrate'] : Doctrine_Core::HYDRATE_RECORD;
+    $order = isset($options['order']) ? $options['order'] : null;
     $related = isset($options['related']) ? $options['related'] : null;
     $query = $this->createQuery('e');
-    $this->addOrderBy($query);
+    $this->addOrderBy($query, $order);
     if ($related)
     {
       $query->leftJoin('e.Entities r');
     }
+    $query = $this->enhanceFindAllSortedBody($query, $options);
     $queryOnly = isset($options['queryOnly']) ? $options['queryOnly'] : null;
     if ($queryOnly)
     {
       return $query;
     }
     return $query->execute(array(), $hydrate);
+  }
+
+  /**
+   * An override point to add additional constraints
+   * or joins to the query 
+   */
+  public function enhanceFindAllSortedBody($query, $options)
+  {
+    return $query;
   }
 
   /**

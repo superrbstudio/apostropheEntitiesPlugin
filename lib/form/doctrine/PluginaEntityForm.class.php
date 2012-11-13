@@ -23,15 +23,21 @@ abstract class PluginaEntityForm extends BaseaEntityForm
   	unset($this['created_at']);
   	unset($this['updated_at']);
     unset($this['pages_list']);
-    $this->getValidator('name')->setOption('required', true);
-    if ($this->getObject()->isNew())
+    if (isset($this['name']))
     {
-      unset($this['slug']);
+      $this->getValidator('name')->setOption('required', true);
     }
-    else
+    if (isset($this['slug']))
     {
-      $this->getValidator('slug')->setOption('required', true);
-      $this->setValidator('slug', new sfValidatorAnd(array($this->getValidator('slug'), new sfValidatorCallback(array('callback' => array($this, 'validateSlug'))))));
+      if ($this->getObject()->isNew())
+      {
+        unset($this['slug']);
+      }
+      else
+      {
+        $this->getValidator('slug')->setOption('required', true);
+        $this->setValidator('slug', new sfValidatorAnd(array($this->getValidator('slug'), new sfValidatorCallback(array('callback' => array($this, 'validateSlug'))))));
+      }
     }
   	// Redundant relation pointing back the other way
   	unset($this['a_entity_list']);

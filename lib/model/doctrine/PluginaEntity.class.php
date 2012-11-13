@@ -178,4 +178,14 @@ abstract class PluginaEntity extends BaseaEntity
   {
     return '';
   }
+
+  public function getSymfonyUrl()
+  {
+    $info = aEntityTools::getClassInfo(get_class($this));
+    if ($info['route'])
+    {
+      return '@' . $info['route'] . '?slug=' . $this->getSlug();
+    }
+    return null;
+  }
 }
