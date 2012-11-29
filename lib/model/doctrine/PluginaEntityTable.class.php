@@ -49,8 +49,25 @@ class PluginaEntityTable extends Doctrine_Table
     $hydrate = isset($options['hydrate']) ? $options['hydrate'] : Doctrine_Core::HYDRATE_RECORD;
     $order = isset($options['order']) ? $options['order'] : null;
     $related = isset($options['related']) ? $options['related'] : null;
+    $confirmed = isset($options['confirmed']) ? $options['confirmed'] : null;
+    $owner = isset($options['owner']) ? $options['owner'] : null;
     $query = $this->createQuery('e');
     $this->addOrderBy($query, $order);
+    if ($owner) 
+    {
+      $query->andWhere('e.owner_id = ?', is_object($owner) ? $owner->getId() : $owner);
+    }
+    if (!is_null($confirmed))
+    {
+      if ($confirmed)
+      {
+        $query->andWhere('e.confirmed IS TRUE AND e.owner_confirmed IS TRUE');
+      }
+      else
+      {
+        $query->andWhere('e.confirmed IS NULL OR e.confirmed IS FALSE OR e.owner_confirmed IS NULL OR e.owner_confirmed IS FALSE');
+      }
+    }
     if ($related)
     {
       $query->leftJoin('e.Entities r');

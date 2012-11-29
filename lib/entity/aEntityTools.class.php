@@ -112,7 +112,8 @@ class aEntityTools
       $table->addOrderBy($query);
 
       $list = aEntityTools::listForClass($class);
-      $form->setWidget($list, new sfWidgetFormDoctrineChoice(array('multiple' => true, 'model' => $class, 'query' => $query)));
+      $info = aEntityTools::getClassInfo($class);
+      $form->setWidget($list, new sfWidgetFormDoctrineChoice(array('multiple' => true, 'model' => $class, 'query' => $query, 'label' => $info['plural'])));
       $form->setValidator($list, new sfValidatorDoctrineChoice(array('multiple' => true, 'model' => $class, 'required' => false, 'query' => $query)));
     }
   }
