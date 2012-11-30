@@ -188,4 +188,9 @@ abstract class PluginaEntity extends BaseaEntity
     }
     return null;
   }
+
+  public function getClassInfo()
+  {
+    return aEntityTools::getClassInfo(get_class($this));
+  }
 }
