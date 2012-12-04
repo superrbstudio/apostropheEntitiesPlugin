@@ -295,15 +295,7 @@ class aEntityTools
       if ($actions->imageForm->isValid())
       {
         $file = $actions->imageForm->getValue('file');
-        $sizes = sfConfig::get('app_aEntities_imageSizes');
-        foreach ($sizes as $name => $settings)
-        {
-          $final = sfConfig::get('sf_upload_dir') . '/entities/' . $actions->entity->getId() . '.' . $name . '.jpg';
-          aImageConverter::cropOriginal($file->getTempName(), $final, $settings['width'], $settings['height']);
-        }
-        $actions->entity->setHasImage(true);
-        $actions->entity->save();
-        return true;
+        return $actions->entity->setImage($file->getTempName());
       }
     }
     return false;
