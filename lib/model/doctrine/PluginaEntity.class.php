@@ -44,6 +44,10 @@ abstract class PluginaEntity extends BaseaEntity
    * and the title will be that most recently set for any language on this
    * post (most folks turn out not to internationalize individual events,
    * so this isn't much of a problem).
+   *
+   * 'query' => true returns a query object. If you want the text of the posts
+   * you will need to call aBlogItemTable::populatePages($posts); after
+   * executing it.
    */
   public function getSortedBlogItems($options)
   {
@@ -51,7 +55,7 @@ abstract class PluginaEntity extends BaseaEntity
   	$limit = isset($options['limit']) ? $options['limit'] : null;
   	$offset = $offset = isset($options['offset']) ? $options['offset'] : null;
   	$blogItemType = isset($options['blogItemType']) ? $options['blogItemType'] : null;
-    
+    $query = isset($options['query']) ? $options['query'] : null;
     // Fetch posts by a particular author rather than related to a 
     // particular entity. It's the difference between being the 
     // journalist and being the subject of the piece. This lives here 
@@ -90,6 +94,10 @@ abstract class PluginaEntity extends BaseaEntity
 		{
 			$q->offset($offset);
 		}
+    if ($query)
+    {
+      return $q;
+    }
     if ($array) 
     {
       return $q->fetchArray();
