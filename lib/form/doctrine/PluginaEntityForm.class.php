@@ -42,6 +42,18 @@ abstract class PluginaEntityForm extends BaseaEntityForm
   	// Redundant relation pointing back the other way
   	unset($this['a_entity_list']);
     aEntityTools::formConfigure($this, true);
+    $this->addWidgetForBlogPosts();
+    $this->addWidgetForEvents();
+  }
+
+  public function addWidgetForBlogPosts()
+  {
+    aBlogToolkit::addBlogItemsWidget($this, 'aBlogPost', 'blog_posts');
+  }
+
+  public function addWidgetForEvents()
+  {
+    aBlogToolkit::addBlogItemsWidget($this, 'aEvent', 'events');
   }
 
   /**
@@ -79,6 +91,27 @@ abstract class PluginaEntityForm extends BaseaEntityForm
     // with the forward links
     parent::doSave($con);
     aEntityTools::formSaveLists($this, $con);
+    $this->relateToBlogPostsAndEvents();
     $this->object->save();
+  }
+
+  public function relateToBlogPostsAndEvents()
+  {
+    $ids = array();
+    if (!(isset($this['blog_posts']) || isset($this['events'])))
+    {
+      return;
+    }
+    if (isset($this['blog_posts']) && $this->getValue('blog_posts'))
+    {
+      $ids = array_merge($ids, $this->getValue('blog_posts'));
+    }
+    if (isset($this['events']) && $this->getValue('events'))
+    {
+      $ids = array_merge($ids, $this->getValue('events'));
+    }
+    $object = $this->getObject();
+    $object->unlink('BlogItems');
+    $object->link('BlogItems', $ids);
   }
 }
