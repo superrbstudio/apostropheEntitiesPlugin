@@ -57,6 +57,17 @@ abstract class PluginaEntityForm extends BaseaEntityForm
   }
 
   /**
+   * Avoid disastrous performance impact of letting Doctrine get its
+   * mitts on the blog posts as related objects and then try to save them
+   */
+  public function getBlogItemIds($model, $name)
+  {
+    $sql = new aMysql();
+    $type = ($model === 'aBlogPost') ? 'post' : 'event';
+    return $sql->queryScalar('SELECT ae.blog_item_id FROM a_entity_to_blog_item ae INNER JOIN a_blog_item bi ON ae.entity_id = :entity_id AND ae.blog_item_id = bi.id AND bi.type = :type', array('entity_id' => $this->getObject()->getId(), 'type' => $type));
+  }
+
+  /**
    * Just make the slug unique rather than complaining
    */
   public function validateSlug($validator, $value)
@@ -111,7 +122,22 @@ abstract class PluginaEntityForm extends BaseaEntityForm
       $ids = array_merge($ids, $this->getValue('events'));
     }
     $object = $this->getObject();
-    $object->unlink('BlogItems');
-    $object->link('BlogItems', $ids);
+
+    // Relate the entity to its blog items the hard way to stay under
+    // Doctrine's radar
+
+    $sql = new aMysql();
+    $sql->query('DELETE FROM a_entity_to_blog_item WHERE entity_id = :id', array('id' => $object->getId()));
+    foreach ($ids as $id) 
+    {
+      $sql->insert('a_entity_to_blog_item', array('entity_id' => $object->getId(), 'blog_item_id' => $id));
+    }
+
+    // If we do it this way Doctrine insists on saving all the
+    // blog items with disastrous performance consequences due to
+    // search engine updates
+
+    // $object->unlink('BlogItems');
+    // $object->link('BlogItems', $ids);
   }
 }
