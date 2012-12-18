@@ -67,7 +67,14 @@ class BaseaEntityActions extends sfActions
 
   public function forwardUnlessEntity()
   {
-    $this->entity = Doctrine::getTable('aEntity')->findOneBySlug($this->getRequest()->getParameter('slug'));
+    if ($this->getRequest()->hasParameter('slug'))
+    {
+      $this->entity = Doctrine::getTable('aEntity')->findOneBySlug($this->getRequest()->getParameter('slug'));
+    } 
+    elseif ($this->getRequest()->hasParameter('id'))
+    {
+      $this->entity = Doctrine::getTable('aEntity')->findOneById($this->getRequest()->getParameter('id'));
+    }
     $this->forward404Unless($this->entity);
     $this->classInfo = aEntityTools::getClassInfo(get_class($this->entity));
   }
