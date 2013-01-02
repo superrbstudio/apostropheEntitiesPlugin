@@ -3,7 +3,7 @@
   <h3>Events</h3>
   <?php foreach ($events as $event): ?>
     <ul class="related-articles">
-      <li class="related-article"><?php echo link_to($event['title'], 'a_blog_event', $event) ?></li>
+      <li class="related-article"><?php echo link_to($event['title'], 'a_event_post', $event) ?></li>
       <?php include_partial('aEvent/meta', array('aEvent' => $event)) ?>
 
       <div class="a-blog-item-excerpt">
