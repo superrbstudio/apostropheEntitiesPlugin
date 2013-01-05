@@ -38,7 +38,10 @@ class apostropheEntitiesPluginConfiguration extends sfPluginConfiguration
       'leftJoin' => 'LEFT JOIN a_entity_to_blog_item aebi ON aebi.blog_item_id = bi.id LEFT JOIN a_entity ae ON aebi.entity_id = ae.id',
       'filterWhere' => 'ae.slug = :entity_slug',
       'filterKey' => 'entity_slug',
-      'selectTemplate' => 'SELECT DISTINCT ae.* %QUERY% AND ae.id IS NOT NULL ORDER BY ae.name ASC',
+      // "Why are you using a subquery?" Fetching just the ids with a subquery and
+      // then populating everything else is dramatically faster in my tests. Like,
+      // nearly zero time instead of seven seconds with a big database. 
+      'selectTemplate' => 'SELECT ae.* FROM a_entity ae WHERE ae.id IN (SELECT ae.id %QUERY% AND ae.id IS NOT NULL) ORDER BY ae.name ASC',
       'arrayKey' => 'entities',
       'urlParameter' => 'entity',
       'urlColumn' => 'slug',
