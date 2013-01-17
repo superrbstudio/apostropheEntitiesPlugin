@@ -1,9 +1,10 @@
+<?php $entity = $sf_data->getRaw('entity') ?>
 <?php $events = $entity->getSortedEvents(array('limit' => 10)) ?>
 <?php if (count($events)): ?>
   <h3>Events</h3>
   <?php foreach ($events as $event): ?>
     <ul class="related-articles">
-      <li class="related-article"><?php echo link_to($event['title'], 'a_event_post', $event) ?></li>
+      <li class="related-article"><?php echo link_to(aHtml::entities($event['title']), 'a_event_post', $event) ?></li>
       <?php include_partial('aEvent/meta', array('aEvent' => $event)) ?>
 
       <div class="a-blog-item-excerpt">
