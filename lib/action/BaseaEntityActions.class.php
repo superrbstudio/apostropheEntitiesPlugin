@@ -39,7 +39,9 @@ class BaseaEntityActions extends sfActions
     $this->class = $this->classInfo['name'];
     $this->pager = new sfDoctrinePager($this->class, 10);
     $table = Doctrine::getTable($this->class);
-    $query = $table->findAllSortedBody(array('queryOnly' => true, 'related' => true, 'order' => $request->getParameter('alpha', 'asc')));
+
+    $query = $table->findAllSortedBody(array('queryOnly' => true, 'related' => true, 'order' => $request->getParameter('alpha', 'asc'), 'letter' => $request->getParameter('letter')));
+
     $filterClasses = $this->classInfo['filters'];
     $this->filters = array();
     $n = 1;

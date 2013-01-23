@@ -51,6 +51,8 @@ class PluginaEntityTable extends Doctrine_Table
     $related = isset($options['related']) ? $options['related'] : null;
     $confirmed = isset($options['confirmed']) ? $options['confirmed'] : null;
     $owner = isset($options['owner']) ? $options['owner'] : null;
+    $letter = isset($options['letter']) ? $options['letter'] : null;
+
     $query = $this->createQuery('e');
     $this->addOrderBy($query, $order);
     if ($owner) 
@@ -68,6 +70,10 @@ class PluginaEntityTable extends Doctrine_Table
         $query->andWhere('e.confirmed IS NULL OR e.confirmed IS FALSE OR e.owner_confirmed IS NULL OR e.owner_confirmed IS FALSE');
       }
     }
+    if ($letter)
+    {
+      $this->addLetterToQuery($query, $letter);
+    }
     if ($related)
     {
       $query->leftJoin('e.Entities r');
@@ -79,6 +85,11 @@ class PluginaEntityTable extends Doctrine_Table
       return $query;
     }
     return $query->execute(array(), $hydrate);
+  }
+
+  protected function addLetterToQuery($query, $letter)
+  {
+    $query->andWhere('e.name LIKE ?', $letter . '%');
   }
 
   /**
