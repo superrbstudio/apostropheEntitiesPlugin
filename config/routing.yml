@@ -1,6 +1,6 @@
 # Put these in your own routing.yml where you have control over them.
 # It's tough to override and/or remove routes in a plugin's routing.yml.
-#
+
 # a_entity_admin:
 #   class: aEntityRouteCollection
 #   options:
@@ -31,3 +31,10 @@
 # a_entity_search_result:
 #   url: /directory/search-result/:id
 #   param: { module: aEntity, action: searchResult }
+
+# Not yet in use:
+# JSON data fetch. NOTE: URL is fixed
+# a_entity_info:
+#   url: /a-entities/info
+#   param: { module: aEntity, action: info }
+

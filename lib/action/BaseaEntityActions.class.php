@@ -93,10 +93,25 @@ class BaseaEntityActions extends sfActions
   public function executeSearchResult(sfWebRequest $request)
   {
     $this->entity = Doctrine::getTable('aEntity')->find($request->getParameter('id'));
-    error_log("entity is " . isset($this->entity));
     $this->forward404Unless($this->entity);
     $this->classInfo = aEntityTools::getClassInfo(get_class($this->entity));
     $route = $this->classInfo['route'];
     return $this->redirect('@' . $route . '?slug=' . $this->entity->slug);
   }
+
+  /**
+   * JSON query for information about an entity. Used to display an icon next
+   * to a tag as part of the new "tags and entities always autosync" strategy
+   */
+  // public function executeInfo(sfWebRequest $request)
+  // {
+  //   $entities = Doctrine::getTable('aEntity')->createQuery('e')->where('e.name = ?', $request->getParameter('name'))->limit(1)->fetchArray();
+  //   if (!count($entities)) {
+  //     $this->forward404Unless($this->entity);
+  //   }
+  //   $this->entity = $entities[0];
+  //   $this->entity['classInfo'] = aEntityTools::getClassInfo(get_class($this->entity));
+  //   echo json_encode($this->entity);
+  //   exit(0);
+  // }
 }
