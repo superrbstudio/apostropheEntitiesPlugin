@@ -47,9 +47,11 @@ class apostropheEntitiesPluginConfiguration extends sfPluginConfiguration
       // it through a "SELECT *" to break any possible link between the inner
       // and outer queries. It's pretty deep.
       //
+      // Adding DISTINCT also helps a ton when there are lots of entities.
+      //
       // See:
       // http://stackoverflow.com/questions/6135376/mysql-select-where-field-in-subquery-extremely-slow-why
-      'selectTemplate' => 'SELECT ae.* FROM a_entity ae WHERE ae.id IN (SELECT * FROM (SELECT ae.id %QUERY% AND ae.id IS NOT NULL) AS subquery) ORDER BY ae.name ASC',
+      'selectTemplate' => 'SELECT ae.* FROM a_entity ae WHERE ae.id IN (SELECT * FROM (SELECT DISTINCT(ae.id) %QUERY% AND ae.id IS NOT NULL) AS subquery) ORDER BY ae.name ASC',
       'arrayKey' => 'entities',
       'urlParameter' => 'entity',
       'urlColumn' => 'slug',
