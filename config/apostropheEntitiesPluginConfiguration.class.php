@@ -38,10 +38,18 @@ class apostropheEntitiesPluginConfiguration extends sfPluginConfiguration
       'leftJoin' => 'LEFT JOIN a_entity_to_blog_item aebi ON aebi.blog_item_id = bi.id LEFT JOIN a_entity ae ON aebi.entity_id = ae.id',
       'filterWhere' => 'ae.slug = :entity_slug',
       'filterKey' => 'entity_slug',
-      // "Why are you using a subquery?" Fetching just the ids with a subquery and
-      // then populating everything else is dramatically faster in my tests. Like,
-      // nearly zero time instead of seven seconds with a big database. 
-      'selectTemplate' => 'SELECT ae.* FROM a_entity ae WHERE ae.id IN (SELECT ae.id %QUERY% AND ae.id IS NOT NULL) ORDER BY ae.name ASC',
+      // "Why are you using a subquery in a subquery?" Fetching just the ids
+      // with a subquery and then populating everything else is dramatically
+      // faster in my tests. Like, nearly zero time instead of seven seconds
+      // with a big database. However to make sure MySQL understands it doesn't
+      // have to run the inner query once for every row of the outer, we must
+      // "decorrelate" it by giving it an alias of its own and passing
+      // it through a "SELECT *" to break any possible link between the inner
+      // and outer queries. It's pretty deep.
+      //
+      // See:
+      // http://stackoverflow.com/questions/6135376/mysql-select-where-field-in-subquery-extremely-slow-why
+      'selectTemplate' => 'SELECT ae.* FROM a_entity ae WHERE ae.id IN (SELECT * FROM (SELECT ae.id %QUERY% AND ae.id IS NOT NULL) AS subquery) ORDER BY ae.name ASC',
       'arrayKey' => 'entities',
       'urlParameter' => 'entity',
       'urlColumn' => 'slug',
